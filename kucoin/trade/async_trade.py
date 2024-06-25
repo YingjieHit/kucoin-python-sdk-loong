@@ -1,9 +1,11 @@
-from kucoin.base_request.base_request import KucoinBaseRestApi
+
+from kucoin.base_request.async_base_request import KucoinFuturesBaseRestApiAsync
 
 
-class TradeData(KucoinBaseRestApi):
 
-    def create_limit_margin_order(self, symbol, side, size, price, clientOid='', **kwargs):
+class TradeDataAsync(KucoinFuturesBaseRestApiAsync):
+
+    async def create_limit_margin_order(self, symbol, side, size, price, clientOid='', **kwargs):
         """
         Place Margin Order
         see： https://www.kucoin.com/docs/rest/margin-trading/orders/place-margin-order
@@ -37,9 +39,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/margin/order', params=params)
+        return await self._request('POST', '/api/v1/margin/order', params=params)
 
-    def create_market_margin_order(self, symbol, side, clientOid='', **kwargs):
+    async def create_market_margin_order(self, symbol, side, clientOid='', **kwargs):
         """
         Place Margin Order
         see： https://www.kucoin.com/docs/rest/margin-trading/orders/place-margin-order
@@ -67,9 +69,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/margin/order', params=params)
+        return await self._request('POST', '/api/v1/margin/order', params=params)
 
-    def place_margin_order_test(self, symbol, side, type,clientOid='', **kwargs):
+    async def place_margin_order_test(self, symbol, side, type,clientOid='', **kwargs):
         """
         Place Margin Order Test
         https://www.kucoin.com/docs/rest/margin-trading/orders/place-margin-order-test
@@ -97,10 +99,10 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/margin/order/test', params=params)
+        return await self._request('POST', '/api/v1/margin/order/test', params=params)
 
 
-    def create_limit_order(self, symbol, side, size, price, clientOid='', **kwargs):
+    async def create_limit_order(self, symbol, side, size, price, clientOid='', **kwargs):
         """
         Place Order
         https://www.kucoin.com/docs/rest/spot-trading/orders/place-order
@@ -130,9 +132,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/orders', params=params)
+        return await self._request('POST', '/api/v1/orders', params=params)
 
-    def create_limit_stop_order(self, symbol, side, size, price, stopPrice, clientOid="", **kwargs):
+    async def create_limit_stop_order(self, symbol, side, size, price, stopPrice, clientOid="", **kwargs):
         params = {
             'symbol': symbol,
             'size': size,
@@ -147,9 +149,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/stop-order', params=params)
+        return await self._request('POST', '/api/v1/stop-order', params=params)
 
-    def create_market_stop_order(self, symbol, side, stopPrice, size="", funds="", clientOid="", **kwargs):
+    async def create_market_stop_order(self, symbol, side, stopPrice, size="", funds="", clientOid="", **kwargs):
         params = {
             'symbol': symbol,
             'side': side,
@@ -170,9 +172,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/stop-order', params=params)
+        return await self._request('POST', '/api/v1/stop-order', params=params)
 
-    def create_market_order(self, symbol, side, clientOid='', size=None,funds=None,**kwargs):
+    async def create_market_order(self, symbol, side, clientOid='', size=None,funds=None,**kwargs):
         """
         Place Order
         https://www.kucoin.com/docs/rest/spot-trading/orders/place-order
@@ -200,10 +202,10 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/orders', params=params)
+        return await self._request('POST', '/api/v1/orders', params=params)
 
 
-    def place_order_test(self, symbol, side,type, clientOid='', **kwargs):
+    async def place_order_test(self, symbol, side,type, clientOid='', **kwargs):
         """
         Place Order Test
         https://www.kucoin.com/docs/rest/spot-trading/orders/place-order-test
@@ -219,10 +221,10 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/orders/test', params=params)
+        return await self._request('POST', '/api/v1/orders/test', params=params)
 
 
-    def create_bulk_orders(self, symbol, orderList):
+    async def create_bulk_orders(self, symbol, orderList):
         """
         https://docs.kucoin.com/#place-bulk-orders
         :param symbol: a valid trading symbol code.
@@ -285,16 +287,16 @@ class TradeData(KucoinBaseRestApi):
             'symbol': symbol,
             'orderList': orderList,
         }
-        return self._request('POST', '/api/v1/orders/multi', params=params)
+        return await self._request('POST', '/api/v1/orders/multi', params=params)
 
-    def cancel_client_order(self, clientId):
+    async def cancel_client_order(self, clientId):
         """
         :param orderId: str  (Mandatory)
         :return:{"cancelledOrderId": "5f311183c9b6d539dc614db3","clientOid": "6d539dc614db3"}
         """
-        return self._request('DELETE', f'/api/v1/order/client-order/{clientId}')
+        return await self._request('DELETE', f'/api/v1/order/client-order/{clientId}')
 
-    def cancel_stop_order(self, orderId):
+    async def cancel_stop_order(self, orderId):
         """
         :param orderId: Order ID, unique ID of the order. (Mandatory)
         :type: str
@@ -305,9 +307,9 @@ class TradeData(KucoinBaseRestApi):
             ]
         }
         """
-        return self._request('DELETE', f'/api/v1/stop-order/{orderId}')
+        return await self._request('DELETE', f'/api/v1/stop-order/{orderId}')
 
-    def cancel_client_stop_order(self, clientOid, symbol=""):
+    async def cancel_client_stop_order(self, clientOid, symbol=""):
         """
         :param orderId: Order ID, unique ID of the order. (Mandatory)
         :type: str
@@ -324,9 +326,9 @@ class TradeData(KucoinBaseRestApi):
         if symbol:
             params["symbol"] = symbol
 
-        return self._request('DELETE', f'/api/v1/stop-order/cancelOrderByClientOid', params=params)
+        return await self._request('DELETE', f'/api/v1/stop-order/cancelOrderByClientOid', params=params)
 
-    def cancel_stop_condition_order(self, symbol="", tradeType="", orderIds=""):
+    async def cancel_stop_condition_order(self, symbol="", tradeType="", orderIds=""):
         """
         """
         params = {}
@@ -337,9 +339,9 @@ class TradeData(KucoinBaseRestApi):
         if orderIds:
             params["orderIds"] = orderIds
 
-        return self._request('DELETE', f'/api/v1/stop-order/cancel', params=params)
+        return await self._request('DELETE', f'/api/v1/stop-order/cancel', params=params)
 
-    def cancel_order(self, orderId):
+    async def cancel_order(self, orderId):
         """
         https://docs.kucoin.com/#cancel-an-order
 
@@ -352,9 +354,9 @@ class TradeData(KucoinBaseRestApi):
             ]
         }
         """
-        return self._request('DELETE', '/api/v1/orders/{orderId}'.format(orderId=orderId))
+        return await self._request('DELETE', '/api/v1/orders/{orderId}'.format(orderId=orderId))
 
-    def cancel_all_orders(self, **kwargs):
+    async def cancel_all_orders(self, **kwargs):
         """
         https://docs.kucoin.com/#cancel-all-orders
         :param kwargs: [optional] symbol, tradeType
@@ -377,9 +379,9 @@ class TradeData(KucoinBaseRestApi):
         params = {}
         if kwargs:
             params.update(kwargs)
-        return self._request('DELETE', '/api/v1/orders', params=params)
+        return await self._request('DELETE', '/api/v1/orders', params=params)
 
-    def get_order_list(self, **kwargs):
+    async def get_order_list(self, **kwargs):
         """
         https://docs.kucoin.com/#list-orders
         :param kwargs: [optional] symbol, status, side, type, tradeType, startAt, endAt, currentPage, pageSize and so on
@@ -429,9 +431,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('GET', '/api/v1/orders', params=params)
+        return await self._request('GET', '/api/v1/orders', params=params)
 
-    def get_recent_orders(self):
+    async def get_recent_orders(self):
         """
         https://docs.kucoin.com/#recent-orders
         :return:
@@ -477,9 +479,9 @@ class TradeData(KucoinBaseRestApi):
         }
         """
 
-        return self._request('GET', '/api/v1/limit/orders')
+        return await self._request('GET', '/api/v1/limit/orders')
 
-    def get_order_details(self, orderId):
+    async def get_order_details(self, orderId):
         """
         https://docs.kucoin.com/#get-an-order
         :param orderId: Order ID, unique identifier of an order, obtained via the List orders. (Mandatory)
@@ -517,9 +519,9 @@ class TradeData(KucoinBaseRestApi):
             "tradeType": "TRADE"
         }
         """
-        return self._request('GET', '/api/v1/orders/{orderId}'.format(orderId=orderId))
+        return await self._request('GET', '/api/v1/orders/{orderId}'.format(orderId=orderId))
 
-    def get_all_stop_order_details(self, **kwargs):
+    async def get_all_stop_order_details(self, **kwargs):
         """
         :param orderId: Order ID, unique identifier of an order, obtained via the List orders. (Mandatory)
         :return:
@@ -559,9 +561,9 @@ class TradeData(KucoinBaseRestApi):
         params = {}
         if kwargs:
             params.update(kwargs)
-        return self._request('GET', f'/api/v1/stop-order', params=params)
+        return await self._request('GET', f'/api/v1/stop-order', params=params)
 
-    def get_stop_order_details(self, orderId):
+    async def get_stop_order_details(self, orderId):
         """
         :param orderId: Order ID, unique identifier of an order, obtained via the List orders. (Mandatory)
         :return:
@@ -598,9 +600,9 @@ class TradeData(KucoinBaseRestApi):
             "tradeType": "TRADE"
         }
         """
-        return self._request('GET', f'/api/v1/stop-order/{orderId}')
+        return await self._request('GET', f'/api/v1/stop-order/{orderId}')
 
-    def get_client_stop_order_details(self, clientOid, symbol=''):
+    async def get_client_stop_order_details(self, clientOid, symbol=''):
         """
         :param orderId: Order ID, unique identifier of an order, obtained via the List orders. (Mandatory)
         :return:
@@ -643,9 +645,9 @@ class TradeData(KucoinBaseRestApi):
         if symbol:
             params["symbol"] = symbol
 
-        return self._request('GET', f'/api/v1/stop-order/queryOrderByClientOid', params=params)
+        return await self._request('GET', f'/api/v1/stop-order/queryOrderByClientOid', params=params)
 
-    def get_fill_list(self, tradeType, **kwargs):
+    async def get_fill_list(self, tradeType, **kwargs):
         """
         https://docs.kucoin.com/#list-fills
         :param tradeType: The type of trading (Mandatory)
@@ -684,9 +686,9 @@ class TradeData(KucoinBaseRestApi):
         }
         if kwargs:
             params.update(kwargs)
-        return self._request('GET', '/api/v1/fills', params=params)
+        return await self._request('GET', '/api/v1/fills', params=params)
 
-    def get_recent_fills(self):
+    async def get_recent_fills(self):
         """
         https://docs.kucoin.com/#recent-fills
         :return:
@@ -750,9 +752,9 @@ class TradeData(KucoinBaseRestApi):
             }
         ]
         """
-        return self._request('GET', '/api/v1/limit/fills')
+        return await self._request('GET', '/api/v1/limit/fills')
 
-    def get_client_order_details(self, clientOid):
+    async def get_client_order_details(self, clientOid):
         """
         https://docs.kucoin.com/#recent-fills
         :param clientOid: Unique order id created by users to identify their orders
@@ -790,9 +792,9 @@ class TradeData(KucoinBaseRestApi):
           "tradeType": "MARGIN_TRADE"
         }
         """
-        return self._request('GET', f'/api/v1/order/client-order/{clientOid}')
+        return await self._request('GET', f'/api/v1/order/client-order/{clientOid}')
 
-    def create_limit_hf_order(self, symbol, side, size, price, clientOid='', **kwargs):
+    async def create_limit_hf_order(self, symbol, side, size, price, clientOid='', **kwargs):
         """
         https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/place-hf-order
         :param symbol: a valid trading symbol code (Mandatory)
@@ -821,9 +823,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/hf/orders', params=params)
+        return await self._request('POST', '/api/v1/hf/orders', params=params)
 
-    def create_hf_market_order(self, symbol, side, clientOid='', **kwargs):
+    async def create_hf_market_order(self, symbol, side, clientOid='', **kwargs):
         """
         https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/place-hf-order
         :param symbol: a valid trading symbol code (Mandatory)
@@ -846,9 +848,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/hf/orders', params=params)
+        return await self._request('POST', '/api/v1/hf/orders', params=params)
 
-    def place_hf_order_test(self, symbol, side, size, price,type, clientOid='', **kwargs):
+    async def place_hf_order_test(self, symbol, side, size, price,type, clientOid='', **kwargs):
         """
         Place HF order Test
         see: https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/place-hf-order-test
@@ -865,10 +867,10 @@ class TradeData(KucoinBaseRestApi):
         params['clientOid'] = clientOid
         if kwargs:
             params.update(kwargs)
-        return self._request('POST', '/api/v1/hf/orders/test', params=params)
+        return await self._request('POST', '/api/v1/hf/orders/test', params=params)
 
 
-    def sync_create_limit_hf_order(self, symbol, side, size, price, clientOid='', **kwargs):
+    async def sync_create_limit_hf_order(self, symbol, side, size, price, clientOid='', **kwargs):
         """
         https://docs.kucoin.com/spot-hf/#sync-place-hf-order
         :param symbol: a valid trading symbol code (Mandatory)
@@ -907,9 +909,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/hf/orders/sync', params=params)
+        return await self._request('POST', '/api/v1/hf/orders/sync', params=params)
 
-    def sync_create_hf_market_order(self, symbol, side, clientOid='', **kwargs):
+    async def sync_create_hf_market_order(self, symbol, side, clientOid='', **kwargs):
         """
         https://docs.kucoin.com/spot-hf/#sync-place-hf-order
         :param symbol: a valid trading symbol code (Mandatory)
@@ -942,9 +944,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/hf/orders/sync', params=params)
+        return await self._request('POST', '/api/v1/hf/orders/sync', params=params)
 
-    def multi_create_hf_order(self, orderList):
+    async def multi_create_hf_order(self, orderList):
         """
         https://docs.kucoin.com/spot-hf/#place-multiple-hf-orders
         :param orderList: order list
@@ -964,9 +966,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'orderList': orderList
         }
-        return self._request('POST', '/api/v1/hf/orders/multi', params=params)
+        return await self._request('POST', '/api/v1/hf/orders/multi', params=params)
 
-    def sync_multi_create_hf_order(self, orderList):
+    async def sync_multi_create_hf_order(self, orderList):
         """
         https://docs.kucoin.com/spot-hf/#sync-place-multiple-hf-orders
         :param orderList: order list
@@ -1000,9 +1002,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'orderList': orderList
         }
-        return self._request('POST', '/api/v1/hf/orders/multi/sync', params=params)
+        return await self._request('POST', '/api/v1/hf/orders/multi/sync', params=params)
 
-    def modify_hf_order(self, symbol, clientOid='', **kwargs):
+    async def modify_hf_order(self, symbol, clientOid='', **kwargs):
         """
         https://docs.kucoin.com/spot-hf/#modify-order
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1024,9 +1026,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/hf/orders/alter', params=params)
+        return await self._request('POST', '/api/v1/hf/orders/alter', params=params)
 
-    def cancel_hf_order_by_order_id(self, symbol, orderId):
+    async def cancel_hf_order_by_order_id(self, symbol, orderId):
         """
         https://docs.kucoin.com/spot-hf/#cancel-orders-by-orderid
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1041,9 +1043,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'symbol': symbol
         }
-        return self._request('DELETE', '/api/v1/hf/orders/{orderId}'.format(orderId=orderId), params=params)
+        return await self._request('DELETE', '/api/v1/hf/orders/{orderId}'.format(orderId=orderId), params=params)
 
-    def sync_cancel_hf_order_by_order_id(self, symbol, orderId):
+    async def sync_cancel_hf_order_by_order_id(self, symbol, orderId):
         """
         https://docs.kucoin.com/spot-hf/#sync-cancel-orders-by-orderid
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1063,9 +1065,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'symbol': symbol
         }
-        return self._request('DELETE', '/api/v1/hf/orders/sync/{orderId}'.format(orderId=orderId), params=params)
+        return await self._request('DELETE', '/api/v1/hf/orders/sync/{orderId}'.format(orderId=orderId), params=params)
 
-    def cancel_hf_order_by_client_id(self, symbol, clientOid):
+    async def cancel_hf_order_by_client_id(self, symbol, clientOid):
         """
         https://docs.kucoin.com/spot-hf/#cancel-order-by-clientoid
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1080,9 +1082,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'symbol': symbol
         }
-        return self._request('DELETE', '/api/v1/hf/orders/client-order/{clientOid}'.format(clientOid=clientOid), params=params)
+        return await self._request('DELETE', '/api/v1/hf/orders/client-order/{clientOid}'.format(clientOid=clientOid), params=params)
 
-    def sync_cancel_hf_order_by_client_id(self, symbol, clientOid):
+    async def sync_cancel_hf_order_by_client_id(self, symbol, clientOid):
         """
         https://docs.kucoin.com/spot-hf/#sync-cancel-orders-by-clientoid
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1102,9 +1104,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'symbol': symbol
         }
-        return self._request('DELETE', '/api/v1/hf/orders/sync/client-order/{clientOid}'.format(clientOid=clientOid), params=params)
+        return await self._request('DELETE', '/api/v1/hf/orders/sync/client-order/{clientOid}'.format(clientOid=clientOid), params=params)
 
-    def cancel_hf_order_specified_number_by_order_id(self, symbol, orderId, cancelSize):
+    async def cancel_hf_order_specified_number_by_order_id(self, symbol, orderId, cancelSize):
         """
         https://docs.kucoin.com/spot-hf/#cancel-specified-number-of-orders-by-orderid
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1123,24 +1125,21 @@ class TradeData(KucoinBaseRestApi):
             'symbol': symbol,
             'cancelSize': cancelSize
         }
-        return self._request('DELETE', '/api/v1/hf/orders/cancel/{orderId}'.format(orderId=orderId), params=params)
+        return await self._request('DELETE', '/api/v1/hf/orders/cancel/{orderId}'.format(orderId=orderId), params=params)
 
-    def cancel_all_hf_orders(self, symbol=''):
+    async def cancel_all_hf_orders(self, symbol):
         """
         https://docs.kucoin.com/spot-hf/#cancel-all-hf-orders-by-symbol
         :param symbol: a valid trading symbol code (Mandatory)
         :type: str
         :return: "success"
         """
-        if not symbol:
-            return self._request('DELETE', '/api/v1/hf/orders/cancelAll')
-
         params = {
             'symbol': symbol
         }
-        return self._request('DELETE', '/api/v1/hf/orders', params=params)
+        return await self._request('DELETE', '/api/v1/hf/orders', params=params)
 
-    def get_active_hf_orders(self, symbol):
+    async def get_active_hf_orders(self, symbol):
         """
         https://docs.kucoin.com/spot-hf/#obtain-list-of-active-hf-orders
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1186,9 +1185,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'symbol': symbol
         }
-        return self._request('GET', '/api/v1/hf/orders/active', params=params)
+        return await self._request('GET', '/api/v1/hf/orders/active', params=params)
 
-    def get_symbol_with_active_hf_orders(self):
+    async def get_symbol_with_active_hf_orders(self):
         """
         https://docs.kucoin.com/spot-hf/#obtain-list-of-symbol-with-active-hf-orders
         :return:
@@ -1196,9 +1195,9 @@ class TradeData(KucoinBaseRestApi):
             "symbols": ["BTC-USDT"]
         }
         """
-        return self._request('GET', '/api/v1/hf/orders/active/symbols')
+        return await self._request('GET', '/api/v1/hf/orders/active/symbols')
 
-    def get_filled_hf_order(self, symbol, **kwargs):
+    async def get_filled_hf_order(self, symbol, **kwargs):
         """
         https://docs.kucoin.com/spot-hf/#obtain-list-of-filled-hf-orders
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1252,9 +1251,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('GET', '/api/v1/hf/orders/done', params=params)
+        return await self._request('GET', '/api/v1/hf/orders/done', params=params)
 
-    def get_single_hf_order(self, symbol, orderId):
+    async def get_single_hf_order(self, symbol, orderId):
         """
         https://docs.kucoin.com/spot-hf/#details-of-a-single-hf-order
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1301,9 +1300,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'symbol': symbol
         }
-        return self._request('GET', '/api/v1/hf/orders/{orderId}'.format(orderId=orderId), params=params)
+        return await self._request('GET', '/api/v1/hf/orders/{orderId}'.format(orderId=orderId), params=params)
 
-    def get_single_hf_order_by_client_oid(self, symbol, clientOid):
+    async def get_single_hf_order_by_client_oid(self, symbol, clientOid):
         """
         https://docs.kucoin.com/spot-hf/#obtain-details-of-a-single-hf-order-using-clientoid
         :param symbol: a valid trading symbol code (Mandatory)
@@ -1350,9 +1349,9 @@ class TradeData(KucoinBaseRestApi):
         params = {
             'symbol': symbol
         }
-        return self._request('GET', '/api/v1/hf/orders/client-order/{clientOid}'.format(clientOid=clientOid), params=params)
+        return await self._request('GET', '/api/v1/hf/orders/client-order/{clientOid}'.format(clientOid=clientOid), params=params)
 
-    def set_hf_auto_cancel(self, timeout, **kwargs):
+    async def set_hf_auto_cancel(self, timeout, **kwargs):
         """
         https://docs.kucoin.com/spot-hf/#hf-auto-cancel-setting
         :param timeout: Auto cancel order trigger setting time, the unit is second.
@@ -1372,9 +1371,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('POST', '/api/v1/hf/orders/dead-cancel-all', params=params)
+        return await self._request('POST', '/api/v1/hf/orders/dead-cancel-all', params=params)
 
-    def query_hf_auto_cancel_setting(self):
+    async def query_hf_auto_cancel_setting(self):
         """
         https://docs.kucoin.com/spot-hf/#hf-auto-cancel-order-setting-query
         :return:
@@ -1385,9 +1384,9 @@ class TradeData(KucoinBaseRestApi):
             "triggerTime": 1682010531
         }
         """
-        return self._request('GET', '/api/v1/hf/orders/dead-cancel-all/query')
+        return await self._request('GET', '/api/v1/hf/orders/dead-cancel-all/query')
 
-    def get_hf_transaction_records(self, symbol, **kwargs):
+    async def get_hf_transaction_records(self, symbol, **kwargs):
         """
         https://docs.kucoin.com/spot-hf/#hf-transaction-records
         :param symbol: Only returns order information for the specified trading pair
@@ -1425,9 +1424,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('GET', '/api/v1/hf/fills', params=params)
+        return await self._request('GET', '/api/v1/hf/fills', params=params)
 
-    def create_oco_order(self, symbol, side, price, stopPrice, size, limitPrice, clientOid="", remark=None):
+    async def create_oco_order(self, symbol, side, price, stopPrice, size, limitPrice, clientOid="", remark=None):
         """
         Place Order
         Do not include extra spaces in JSON strings in request body.
@@ -1463,10 +1462,10 @@ class TradeData(KucoinBaseRestApi):
         if remark:
             params['remark'] = remark
 
-        return self._request('POST', '/api/v3/oco/order', params=params)
+        return await self._request('POST', '/api/v3/oco/order', params=params)
 
 
-    def get_hf_completed_orders(self, symbol, **kwargs):
+    async def get_hf_completed_orders(self, symbol, **kwargs):
         """
         Get HF Completed order list
         https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/get-hf-completed-order-list
@@ -1480,9 +1479,9 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('GET', '/api/v1/hf/orders/done', params=params)
+        return await self._request('GET', '/api/v1/hf/orders/done', params=params)
 
-    def get_hf_filled_list(self, symbol, **kwargs):
+    async def get_hf_filled_list(self, symbol, **kwargs):
         """
         Get HF Filled List
         https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/get-hf-filled-list
@@ -1521,8 +1520,8 @@ class TradeData(KucoinBaseRestApi):
         if kwargs:
             params.update(kwargs)
 
-        return self._request('GET', '/api/v1/hf/fills', params=params)
-    def cancel_oco_order(self, orderId):
+        return await self._request('GET', '/api/v1/hf/fills', params=params)
+    async def cancel_oco_order(self, orderId):
         """
         Cancel Order by orderId
         Request via this endpoint to cancel a single oco order previously placed.
@@ -1538,9 +1537,9 @@ class TradeData(KucoinBaseRestApi):
             ]
         }
         """
-        return self._request('DELETE', f'/api/v3/oco/order/{orderId}')
+        return await self._request('DELETE', f'/api/v3/oco/order/{orderId}')
 
-    def cancel_oco_order_by_clientOid(self, clientOid):
+    async def cancel_oco_order_by_clientOid(self, clientOid):
         """
         Cancel Order by clientOid
         https://www.kucoin.com/docs/rest/spot-trading/oco-order/cancel-order-by-clientoid
@@ -1553,9 +1552,9 @@ class TradeData(KucoinBaseRestApi):
             ]
         }
         """
-        return self._request('DELETE', f'/api/v3/oco/client-order/{clientOid}')
+        return await self._request('DELETE', f'/api/v3/oco/client-order/{clientOid}')
 
-    def cancel_all_oco_orders(self, symbol=None, orderIds=None):
+    async def cancel_all_oco_orders(self, symbol=None, orderIds=None):
         """
         Cancel Multiple Orders
         This interface can batch cancel OCO orders through orderIds.
@@ -1578,9 +1577,9 @@ class TradeData(KucoinBaseRestApi):
             params['symbol']=symbol
         if orderIds:
             params['orderIds']=orderIds
-        return self._request('DELETE', '/api/v3/oco/orders', params=params)
+        return await self._request('DELETE', '/api/v3/oco/orders', params=params)
 
-    def get_oco_order_by_orderId(self, orderId):
+    async def get_oco_order_by_orderId(self, orderId):
         """
         Get Order Info by orderId
         Request via this interface to get a oco order information via the order ID.
@@ -1595,10 +1594,10 @@ class TradeData(KucoinBaseRestApi):
           "status": "NEW"
         }
         """
-        return self._request('GET', f'api/v3/oco/order/{orderId}')
+        return await self._request('GET', f'api/v3/oco/order/{orderId}')
 
 
-    def get_oco_order_by_client_oid(self, clientOid):
+    async def get_oco_order_by_client_oid(self, clientOid):
         """
         Get Order Info by clientOid
         https://docs.kucoin.com/spot-hf/#obtain-details-of-a-single-hf-order-using-clientoid
@@ -1613,9 +1612,9 @@ class TradeData(KucoinBaseRestApi):
           "status": "NEW"
         }
         """
-        return self._request('GET', f'/api/v3/oco/client-order/{clientOid}')
+        return await self._request('GET', f'/api/v3/oco/client-order/{clientOid}')
 
-    def get_oco_orders(self,pageSize,currentPage,symbol=None,startAt=None,endAt=None,orderIds=None):
+    async def get_oco_orders(self,pageSize,currentPage,symbol=None,startAt=None,endAt=None,orderIds=None):
         """
         Get Order List
         Request via this endpoint to get your current OCO order list. Items are paginated and sorted to show the latest first. See the Pagination section for retrieving additional entries after the first page.
@@ -1663,9 +1662,9 @@ class TradeData(KucoinBaseRestApi):
         if orderIds:
             params['orderIds']=orderIds
 
-        return self._request('GET', '/api/v3/oco/orders',params=params)
+        return await self._request('GET', '/api/v3/oco/orders',params=params)
 
-    def get_oco_order_details(self, orderId):
+    async def get_oco_order_details(self, orderId):
         """
         Get Order Details by orderId
         Request via this interface to get a oco order detail via the order ID.
@@ -1701,26 +1700,30 @@ class TradeData(KucoinBaseRestApi):
             ]
         }
         """
-        return self._request('GET', f'api/v3/oco/order/details/{orderId}')
+        return await self._request('GET', f'api/v3/oco/order/details/{orderId}')
 
-    # def cancel_all_hf_orders(self):
-    #     """
-    #     Cancel all HF orders
-    #     This endpoint can cancel all HF orders for all symbol.
-    #     https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/cancel-all-hf-orders
-    #
-    #     :return:
-    #     {
-    #       "succeedSymbols": [
-    #         "BTC-USDT",
-    #         "ETH-USDT"
-    #       ],
-    #       "failedSymbols": [
-    #         {
-    #             "symbol": "BTC-USDT",
-    #             "error": "can't cancel, system timeout"
-    #         }
-    #       ],
-    #     }
-    #     """
-    #     return self._request('DELETE', '/api/v1/hf/orders/cancelAll')
+    async def cancel_all_hf_orders(self):
+        """
+        Cancel all HF orders
+        This endpoint can cancel all HF orders for all symbol.
+        https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/cancel-all-hf-orders
+
+        :return:
+        {
+          "succeedSymbols": [
+            "BTC-USDT",
+            "ETH-USDT"
+          ],
+          "failedSymbols": [
+            {
+                "symbol": "BTC-USDT",
+                "error": "can't cancel, system timeout"
+            }
+          ],
+        }
+        """
+        return await self._request('DELETE', '/api/v1/hf/orders/cancelAll')
+
+
+
+
