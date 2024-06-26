@@ -45,7 +45,8 @@ class BaseMarketMaker(object):
                                                                     private=True)
 
         # 订阅orderbook  TODO: 这里需要改成通过接口选择订阅何种数据。
-        await self.ws_public_client.subscribe(f'/market/ticker:{self.symbol}')
+        # await self.ws_public_client.subscribe(f'/market/ticker:{self.symbol}')
+        await self.ws_public_client.subscribe(f"/spotMarket/level2Depth50:{self.symbol}")
 
         # 订阅private tradeOrders
         await self.ws_private_client.subscribe(f'/market/match:{self.symbol}')
@@ -155,8 +156,8 @@ class BaseMarketMaker(object):
 
     async def deal_public_msg(self, msg):
         data = msg.get('data')
-        if msg.get('subject') == Subject.tradeTicker:
-            ticker = utils.spot_dict_2_ticker(data)
+        if msg.get('subject') == Subject.level2:
+            ticker = utils.spot_level2_2_ticker(data)
             ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
             await self.event_queue.put(TickerEvent(ticker))
 
