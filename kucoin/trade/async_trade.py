@@ -1127,13 +1127,16 @@ class TradeDataAsync(KucoinFuturesBaseRestApiAsync):
         }
         return await self._request('DELETE', '/api/v1/hf/orders/cancel/{orderId}'.format(orderId=orderId), params=params)
 
-    async def cancel_all_hf_orders(self, symbol):
+    async def cancel_all_hf_orders(self, symbol=''):
         """
         https://docs.kucoin.com/spot-hf/#cancel-all-hf-orders-by-symbol
         :param symbol: a valid trading symbol code (Mandatory)
         :type: str
         :return: "success"
         """
+        if not symbol:
+            return await self._request('DELETE', '/api/v1/hf/orders/cancelAll')
+
         params = {
             'symbol': symbol
         }
@@ -1702,27 +1705,27 @@ class TradeDataAsync(KucoinFuturesBaseRestApiAsync):
         """
         return await self._request('GET', f'api/v3/oco/order/details/{orderId}')
 
-    async def cancel_all_hf_orders(self):
-        """
-        Cancel all HF orders
-        This endpoint can cancel all HF orders for all symbol.
-        https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/cancel-all-hf-orders
-
-        :return:
-        {
-          "succeedSymbols": [
-            "BTC-USDT",
-            "ETH-USDT"
-          ],
-          "failedSymbols": [
-            {
-                "symbol": "BTC-USDT",
-                "error": "can't cancel, system timeout"
-            }
-          ],
-        }
-        """
-        return await self._request('DELETE', '/api/v1/hf/orders/cancelAll')
+    # async def cancel_all_hf_orders(self):
+    #     """
+    #     Cancel all HF orders
+    #     This endpoint can cancel all HF orders for all symbol.
+    #     https://www.kucoin.com/docs/rest/spot-trading/spot-hf-trade-pro-account/cancel-all-hf-orders
+    #
+    #     :return:
+    #     {
+    #       "succeedSymbols": [
+    #         "BTC-USDT",
+    #         "ETH-USDT"
+    #       ],
+    #       "failedSymbols": [
+    #         {
+    #             "symbol": "BTC-USDT",
+    #             "error": "can't cancel, system timeout"
+    #         }
+    #       ],
+    #     }
+    #     """
+    #     return await self._request('DELETE', '/api/v1/hf/orders/cancelAll')
 
 
 
