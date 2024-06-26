@@ -157,7 +157,7 @@ class BaseMarketMaker(object):
         data = msg.get('data')
         if msg.get('subject') == Subject.tradeTicker:
             ticker = utils.spot_dict_2_ticker(data)
-            ticker['symbol'] = self.symbol  # TODO: 暂时这么写，不太严谨
+            ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
             await self.event_queue.put(TickerEvent(ticker))
 
     async def deal_private_msg(self, msg):
