@@ -1,5 +1,4 @@
 import asyncio
-import socket
 
 from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
