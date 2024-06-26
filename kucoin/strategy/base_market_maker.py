@@ -163,6 +163,7 @@ class BaseMarketMaker(object):
 
     async def deal_private_msg(self, msg):
         data = msg.get('data')
+        print(msg)
         if msg.get('subject') == Subject.orderChange:
             order = utils.spot_dict_2_order(data)
             await self.event_queue.put(TraderOrderEvent(order))
