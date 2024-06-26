@@ -49,7 +49,7 @@ class BaseMarketMaker(object):
         await self.ws_public_client.subscribe(f"/spotMarket/level2Depth50:{self.symbol}")
 
         # 订阅private tradeOrders
-        await self.ws_private_client.subscribe(f'/spotMarket/tradeOrdersV2:{self.symbol}')
+        await self.ws_private_client.subscribe(f'/spotMarket/tradeOrders:{self.symbol}')
 
         self.enable = True
 
