@@ -23,7 +23,7 @@ class BaseMarketMaker(object):
             key=key,
             secret=secret,
             passphrase=passphrase,
-            url='https://api.kucoin.com',
+            # url='https://api.kucoin.com',
         )
         self.trade = TradeDataAsync(key=key, secret=secret, passphrase=passphrase)
         self.ws_public_client = None
@@ -50,6 +50,7 @@ class BaseMarketMaker(object):
 
         # 订阅private tradeOrders
         await self.ws_private_client.subscribe(f'/spotMarket/tradeOrders:{self.symbol}')
+        print(f'订阅成功 /spotMarket/tradeOrders:{self.symbol}')
 
         self.enable = True
 
@@ -163,6 +164,7 @@ class BaseMarketMaker(object):
 
     async def deal_private_msg(self, msg):
         data = msg.get('data')
+        print("收到私有消息:")
         print(msg)
         if msg.get('subject') == Subject.orderChange:
             order = utils.spot_dict_2_order(data)
