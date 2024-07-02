@@ -177,6 +177,7 @@ class BaseMarketMaker(object):
             order = utils.spot_dict_2_order(data)
             await self.event_queue.put(TraderOrderEvent(order))
         if msg.get('subject') == Subject.accountBalance:
+            print(f"账户余额变化：{data}")
             account_balance = utils.spot_dict_2_account_balance(data)
             await self.event_queue.put(AccountBalanceEvent(account_balance))
 
