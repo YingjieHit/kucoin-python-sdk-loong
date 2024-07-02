@@ -179,7 +179,6 @@ class BaseMarketMaker(object):
         elif msg.get('subject') == Subject.accountBalance:
             account_balance = utils.spot_dict_2_account_balance(data)
             await self.event_queue.put(AccountBalanceEvent(account_balance))
-            print(account_balance)
 
     async def create_market_maker_order(self, symbol, size, price_buy, price_sell,
                                         client_oid_buy='', client_oid_sell='', post_only=True, lever=1):
