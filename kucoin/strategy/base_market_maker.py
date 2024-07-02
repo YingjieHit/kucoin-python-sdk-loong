@@ -6,10 +6,11 @@ from kucoin.trade.async_trade import TradeDataAsync
 
 from kucoin_futures.strategy.event import (EventType, TickerEvent, TraderOrderEvent, CreateMarketMakerOrderEvent,
                                            CreateOrderEvent,
-                                           CancelAllOrderEvent, CancelOrderEvent)
+                                           CancelAllOrderEvent, CancelOrderEvent,
+                                           AccountBalanceEvent)
 from kucoin.strategy.enums import Subject
 from kucoin_futures.strategy.utils import utils
-from kucoin_futures.strategy.object import Ticker, Order, MarketMakerCreateOrder, CreateOrder, CancelOrder
+from kucoin_futures.strategy.object import Ticker, Order, MarketMakerCreateOrder, CreateOrder, CancelOrder, AccountBalance
 from kucoin_futures.common.app_logger import app_logger
 
 
@@ -50,6 +51,8 @@ class BaseMarketMaker(object):
 
         # 订阅private tradeOrders
         await self.ws_private_client.subscribe(f'/spotMarket/tradeOrders')
+        # 订阅private /account/balance
+        await self.ws_private_client.subscribe(f'/spotMarket/accountBalance')
 
         self.enable = True
 
@@ -140,6 +143,9 @@ class BaseMarketMaker(object):
     async def on_order(self, order: Order):
         raise NotImplementedError("需要实现on_order")
 
+    async def on_account_balance(self, account_balance: AccountBalance):
+        raise NotImplementedError("需要实现on_account_balance")
+
     async def process_event(self):
         """处理事件"""
         while True:
@@ -151,6 +157,10 @@ class BaseMarketMaker(object):
                 elif event.type == EventType.TRADE_ORDER:
                     # 处理order回报
                     await self.on_order(event.data)
+                elif event.type == EventType.ACCOUNT_BALANCE:
+                    # 处理账户余额更变
+                    await self.on_account_balance(event.data)
+
             except Exception as e:
                 await app_logger.error(f"process_event Error {str(e)}")
 
@@ -166,6 +176,10 @@ class BaseMarketMaker(object):
         if msg.get('subject') == Subject.orderChange and data.get('symbol') == self.symbol:
             order = utils.spot_dict_2_order(data)
             await self.event_queue.put(TraderOrderEvent(order))
+        if msg.get('subject') == Subject.accountBalance:
+            account_balance = utils.spot_dict_2_account_balance(data)
+            await self.event_queue.put(AccountBalanceEvent(account_balance))
+
 
     async def create_market_maker_order(self, symbol, size, price_buy, price_sell,
                                         client_oid_buy='', client_oid_sell='', post_only=True, lever=1):

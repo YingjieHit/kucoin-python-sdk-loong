@@ -4,3 +4,4 @@ class Subject:
     level2 = 'level2'  # l2数据
     tradeL3Match = 'trade.l3match'  # 市场成交数据
     orderChange = 'orderChange'  # 私有订单变化
+    accountBalance = 'account.balance'  # 账户余额变化
