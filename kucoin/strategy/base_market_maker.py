@@ -10,7 +10,8 @@ from kucoin_futures.strategy.event import (EventType, TickerEvent, TraderOrderEv
                                            AccountBalanceEvent)
 from kucoin.strategy.enums import Subject
 from kucoin_futures.strategy.utils import utils
-from kucoin_futures.strategy.object import Ticker, Order, MarketMakerCreateOrder, CreateOrder, CancelOrder, AccountBalance
+from kucoin_futures.strategy.object import Ticker, Order, MarketMakerCreateOrder, CreateOrder, CancelOrder, \
+    AccountBalance
 from kucoin_futures.common.app_logger import app_logger
 
 
@@ -41,9 +42,9 @@ class BaseMarketMaker(object):
 
         # 创建ws_client
         self.ws_public_client = await KucoinWsClient.create(None, self.client, self.deal_public_msg,
-                                                                   private=False)
+                                                            private=False)
         self.ws_private_client = await KucoinWsClient.create(None, self.client, self.deal_private_msg,
-                                                                    private=True)
+                                                             private=True)
 
         # 订阅orderbook  TODO: 这里需要改成通过接口选择订阅何种数据。
         # await self.ws_public_client.subscribe(f'/market/ticker:{self.symbol}')
@@ -66,9 +67,6 @@ class BaseMarketMaker(object):
                 if event.type == EventType.CREATE_MARKET_MAKER_ORDER:
                     # 发送做市单
                     mmo: MarketMakerCreateOrder = event.data
-                    # res = await self.trade.create_market_maker_order(mmo.symbol, mmo.lever, mmo.size, mmo.price_buy,
-                    #                                                  mmo.price_sell, mmo.client_oid_buy,
-                    #                                                  mmo.client_oid_sell, mmo.post_only)
                     order_list = [
                         {
                             "clientOid": mmo.client_oid_buy,
@@ -87,6 +85,12 @@ class BaseMarketMaker(object):
                             "postOnly": mmo.post_only,
                         }
                     ]
+                    if mmo.cancel_after > 0:
+                        order_list[0]['timeInForce'] = 'GTT'
+                        order_list[0]['cancelAfter'] = mmo.cancel_after
+                        order_list[1]['timeInForce'] = 'GTT'
+                        order_list[1]['cancelAfter'] = mmo.cancel_after
+
                     await self.trade.create_bulk_orders(mmo.symbol, orderList=order_list)
                     # TODO: 这里需要改成高频账号下单
 
@@ -95,18 +99,22 @@ class BaseMarketMaker(object):
                     # 发送订单
                     co: CreateOrder = event.data
                     if co.type == 'limit':
-                        # await self.trade.create_limit_order(co.symbol, co.side, co.lever, co.size, co.price,
-                        #                                     co.client_oid,
-                        #                                     postOnly=co.post_only)
-                        await self.trade.create_limit_order(co.symbol, co.side, co.size, co.price, co.client_oid, postOnly=co.post_only)
+                        params = {
+                            'postOnly': co.post_only,
+                        }
+                        if co.cancel_after > 0:
+                            params['timeInForce'] = 'GTT'
+                            params['cancelAfter'] = co.cancel_after
+                        await self.trade.create_limit_order(co.symbol, co.side, co.size, co.price, co.client_oid, **params)
                         # TODO: 这里需要改成高频账号下单
 
                     elif co.type == 'market':
-                        # await  self.trade.create_market_order(co.symbol, co.side, co.lever, co.client_oid,
-                        #                                           postOnly=co.post_only)
-                        await self.trade.create_market_order(co.symbol, co.side, co.client_oid, size=co.size, postOnly=co.post_only)
+                        params = {}
+                        if co.cancel_after > 0:
+                            params['timeInForce'] = 'GTT'
+                            params['cancelAfter'] = co.cancel_after
+                        await self.trade.create_market_order(co.symbol, co.side, co.client_oid, size=co.size, **params)
                         # TODO: 这里需要改成高频账号下单
-
 
             except Exception as e:
                 await app_logger.error(f"execute_order_process Error {str(e)}")
@@ -180,8 +188,13 @@ class BaseMarketMaker(object):
             account_balance = utils.spot_dict_2_account_balance(data)
             await self.event_queue.put(AccountBalanceEvent(account_balance))
 
-    async def create_market_maker_order(self, symbol, size, price_buy, price_sell,
-                                        client_oid_buy='', client_oid_sell='', post_only=True, lever=1):
+    async def create_market_maker_order(
+            self, symbol, size, price_buy, price_sell,
+            client_oid_buy='', client_oid_sell='',
+            post_only=True,
+            cancel_after=-1,
+            lever=1,
+    ):
         mm_order = MarketMakerCreateOrder(
             symbol=symbol,
             lever=lever,
@@ -190,7 +203,8 @@ class BaseMarketMaker(object):
             price_sell=price_sell,
             client_oid_buy=client_oid_buy,
             client_oid_sell=client_oid_sell,
-            post_only=post_only
+            post_only=post_only,
+            cancel_after=cancel_after,
         )
         await self.order_task_queue.put(CreateMarketMakerOrderEvent(mm_order))
 
