@@ -11,6 +11,7 @@ from kucoin_futures.strategy.event import (
     CancelAllOrderEvent, CancelOrderEvent,
     AccountBalanceEvent
 )
+from kucoin_futures.strategy.object import Bar
 from kucoin.strategy.kline import Kline
 from kucoin_futures.common.app_logger import app_logger
 
@@ -28,6 +29,7 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         self.kline_frequency = kline_frequency
         self.kline_size = kline_size
         self.kline = Kline(self.kline_size)
+        self.updating_bar: Bar|None = None  # 正在更新的bar
         self.market_client = MarketDataAsync()
 
     async def run(self):
@@ -78,5 +80,16 @@ class BaseCtaMarketMaker(BaseMarketMaker):
             except Exception as e:
                 await app_logger.error(f"process_event Error {str(e)}")
 
-    async def on_bar(self, bar):
-        raise NotImplementedError("需要实现on_bar")
+    async def on_bar(self, bar: Bar):
+        if self.updating_bar is None:
+            self.updating_bar = bar
+        else:
+            if bar.ts > self.updating_bar.ts:
+                self.kline.update(self.updating_bar)
+                self.updating_bar = bar
+                # 重新计算CTA信号
+
+        # 检查ts是否合理
+        #
+        if bar.ts == self.kline.ts[-1]:
+            pass
