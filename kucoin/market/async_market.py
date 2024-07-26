@@ -334,7 +334,7 @@ class MarketDataAsync(KucoinFuturesBaseRestApiAsync):
             end_at = int(datetime.now().timestamp())
         start_at = end_at - utils.calc_second_by_freq(kline_type, n)
 
-        return (await self.get_kline(symbol, kline_type, startAt=start_at, endAt=end_at))['data']
+        return await self.get_kline(symbol, kline_type, startAt=start_at, endAt=end_at)
 
     async def get_currencies(self):
         """
