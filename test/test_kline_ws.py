@@ -23,7 +23,7 @@ async def main():
     # client.set_sock(sock)
     ws_client = await KucoinWsClient.create(None, client, deal_msg, private=False)
     symbol = "BTC-USDT"
-    frequency_type = '1min'
+    frequency_type = '5min'
     await ws_client.subscribe(f'/market/candles:{symbol}_{frequency_type}')
     while True:
         await asyncio.sleep(60)

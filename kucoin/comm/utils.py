@@ -13,8 +13,8 @@ class Utils(object):
     @staticmethod
     def calc_second_by_freq(freq: str, n: int):
         # 1min, 3min, 15min, 30min, 1hour, 2hour, 4hour, 6hour, 8hour, 12hour, 1day, 1week
-        if freq not in ['1min', '3min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '8hour', '12hour', '1day', '1week']:
-            raise ValueError("freq not in ['1min', '3min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '8hour', '12hour', '1day', '1week']")
+        if freq not in ['1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '8hour', '12hour', '1day', '1week']:
+            raise ValueError("freq not in ['1min', '3min', '5min', '15min', '30min', '1hour', '2hour', '4hour', '6hour', '8hour', '12hour', '1day', '1week']")
 
         return {
             '1min': 60,
