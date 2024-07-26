@@ -65,7 +65,8 @@ class BaseCtaMarketMaker(BaseMarketMaker):
             self.kline_frequency,
             self.kline_size,
             end_at=utils.get_cur_timestamp() - utils.calc_second_by_freq(self.kline_frequency, 1)
-        )['data']
+        )
+        kline_source_list = kline_source_list['data']
         print(f"kline_source_list: {kline_source_list}")
 
         # 转换为标准形式
