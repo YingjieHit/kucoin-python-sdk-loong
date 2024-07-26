@@ -53,9 +53,9 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         # await self.ws_public_client.subscribe(f"/spotMarket/level2Depth50:{self.symbol}")
 
         # 订阅private tradeOrders
-        # await self.ws_private_client.subscribe('/spotMarket/tradeOrders')
+        await self.ws_private_client.subscribe('/spotMarket/tradeOrders')
         # 订阅private /account/balance
-        # await self.ws_private_client.subscribe('/account/balance')
+        await self.ws_private_client.subscribe('/account/balance')
 
         # 订阅K线
         # await self.ws_public_client.subscribe(f'/market/candles:{self.symbol}_{self.kline_frequency}')
