@@ -81,15 +81,4 @@ class BaseCtaMarketMaker(BaseMarketMaker):
                 await app_logger.error(f"process_event Error {str(e)}")
 
     async def on_bar(self, bar: Bar):
-        if self.updating_bar is None:
-            self.updating_bar = bar
-        else:
-            if bar.ts > self.updating_bar.ts:
-                self.kline.update(self.updating_bar)
-                self.updating_bar = bar
-                # 重新计算CTA信号
-
-        # 检查ts是否合理
-        #
-        if bar.ts == self.kline.ts[-1]:
-            pass
+        raise NotImplementedError("需要实现on_bar")
