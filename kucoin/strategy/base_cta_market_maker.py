@@ -50,15 +50,15 @@ class BaseCtaMarketMaker(BaseMarketMaker):
 
         # 订阅orderbook  TODO: 这里需要改成通过接口选择订阅何种数据。
         # await self.ws_public_client.subscribe(f'/market/ticker:{self.symbol}')
-        await self.ws_public_client.subscribe(f"/spotMarket/level2Depth50:{self.symbol}")
+        # await self.ws_public_client.subscribe(f"/spotMarket/level2Depth50:{self.symbol}")
 
         # 订阅private tradeOrders
-        await self.ws_private_client.subscribe('/spotMarket/tradeOrders')
+        # await self.ws_private_client.subscribe('/spotMarket/tradeOrders')
         # 订阅private /account/balance
-        await self.ws_private_client.subscribe('/account/balance')
+        # await self.ws_private_client.subscribe('/account/balance')
 
         # 订阅K线
-        # await self.ws_public_client.subscribe(f'/market/candles:{self.symbol}_{self.kline_frequency}')
+        await self.ws_public_client.subscribe(f'/market/candles:{self.symbol}_{self.kline_frequency}')
         # 获取最新K线
         kline_source_list = await self.market_client.get_last_n_kline(
             self.symbol,
@@ -81,15 +81,15 @@ class BaseCtaMarketMaker(BaseMarketMaker):
     async def deal_public_msg(self, msg):
         print(f"msg: {msg}")
 
-        data = msg.get('data')
-        if msg.get('subject') == Subject.level2:
-            ticker = strategy_utils.spot_level2_2_ticker(data)
-            ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
-            await self.event_queue.put(TickerEvent(ticker))
-
-        elif msg.get('subject') in [Subject.tradeCandlesAdd, Subject.tradeCandlesUpdate]:
-            bar = strategy_utils.spot_candle_2_bar(data)
-            await self.event_queue.put(BarEvent(bar))
+        # data = msg.get('data')
+        # if msg.get('subject') == Subject.level2:
+        #     ticker = strategy_utils.spot_level2_2_ticker(data)
+        #     ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
+        #     await self.event_queue.put(TickerEvent(ticker))
+        #
+        # elif msg.get('subject') in [Subject.tradeCandlesAdd, Subject.tradeCandlesUpdate]:
+        #     bar = strategy_utils.spot_candle_2_bar(data)
+        #     await self.event_queue.put(BarEvent(bar))
 
     async def process_event(self):
         """处理事件"""
