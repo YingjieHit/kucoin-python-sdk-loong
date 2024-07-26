@@ -67,10 +67,10 @@ class BaseCtaMarketMaker(BaseMarketMaker):
             end_at=utils.get_cur_timestamp() - utils.calc_second_by_freq(self.kline_frequency, 1)
         )
         kline_source_list = kline_source_list['data']
-        print(f"kline_source_list: {kline_source_list}")
 
         # 转换为标准形式
         bars = strategy_utils.spot_candles_2_bars(self.symbol, kline_source_list)
+        print(f"kline_source_list: {kline_source_list}")
         self.kline.updates(bars)
 
         self.enable = True
