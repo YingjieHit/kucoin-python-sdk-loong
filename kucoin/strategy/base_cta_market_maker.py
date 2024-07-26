@@ -67,12 +67,9 @@ class BaseCtaMarketMaker(BaseMarketMaker):
             end_at=utils.get_cur_timestamp() - utils.calc_second_by_freq(self.kline_frequency, 1)
         )
         kline_source_list = kline_source_list['data']
-
         # 转换为标准形式
         bars = strategy_utils.spot_candles_2_bars(self.symbol, kline_source_list)
-        print(f"kline_source_list: {bars}")
         self.kline.updates(bars)
-
         self.enable = True
         while True:
             await asyncio.sleep(60 * 60 * 24)
