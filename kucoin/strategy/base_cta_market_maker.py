@@ -1,5 +1,7 @@
+import asyncio
 from kucoin.strategy.base_market_maker import BaseMarketMaker
 from kucoin.market.async_market import MarketDataAsync
+from kucoin.ws_client import KucoinWsClient
 from kucoin.strategy.enums import Subject
 from kucoin.comm.utils import utils
 from kucoin_futures.strategy.utils import utils as strategy_utils
@@ -33,6 +35,28 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         self.market_client = MarketDataAsync()
 
     async def run(self):
+        # 创建事件处理任务
+        process_event_task = asyncio.create_task(self.process_event())
+        # 创建交易执行任务
+        execute_order_task = asyncio.create_task(self.execute_order())
+        # 创建撤单执行任务
+        cancel_order_task = asyncio.create_task(self.process_cancel_order())
+
+        # 创建ws_client
+        self.ws_public_client = await KucoinWsClient.create(None, self.client, self.deal_public_msg,
+                                                            private=False)
+        self.ws_private_client = await KucoinWsClient.create(None, self.client, self.deal_private_msg,
+                                                             private=True)
+
+        # 订阅orderbook  TODO: 这里需要改成通过接口选择订阅何种数据。
+        # await self.ws_public_client.subscribe(f'/market/ticker:{self.symbol}')
+        await self.ws_public_client.subscribe(f"/spotMarket/level2Depth50:{self.symbol}")
+
+        # 订阅private tradeOrders
+        await self.ws_private_client.subscribe('/spotMarket/tradeOrders')
+        # 订阅private /account/balance
+        await self.ws_private_client.subscribe('/account/balance')
+
         # 订阅K线
         await self.ws_public_client.subscribe(f'/market/candles:{self.symbol}_{self.kline_frequency}')
         # 获取最新K线
@@ -46,7 +70,10 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         bars = strategy_utils.spot_candles_2_bars(self.symbol, kline_source_list)
         self.kline.updates(bars)
 
-        await super().run()
+        self.enable = True
+        while True:
+            await asyncio.sleep(60 * 60 * 24)
+        # await super().run()
 
     async def deal_public_msg(self, msg):
         data = msg.get('data')
