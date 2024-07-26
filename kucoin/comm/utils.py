@@ -19,6 +19,7 @@ class Utils(object):
         return {
             '1min': 60,
             '3min': 3 * 60,
+            '5min': 5 * 60,
             '15min': 15 * 60,
             '30min': 30 * 60,
             '1hour': 60 * 60,
