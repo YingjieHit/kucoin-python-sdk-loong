@@ -79,6 +79,8 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         # await super().run()
 
     async def deal_public_msg(self, msg):
+        print(f"msg: {msg}")
+
         data = msg.get('data')
         if msg.get('subject') == Subject.level2:
             ticker = strategy_utils.spot_level2_2_ticker(data)
