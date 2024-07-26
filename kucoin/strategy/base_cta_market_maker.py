@@ -70,7 +70,7 @@ class BaseCtaMarketMaker(BaseMarketMaker):
 
         # 转换为标准形式
         bars = strategy_utils.spot_candles_2_bars(self.symbol, kline_source_list)
-        print(f"kline_source_list: {kline_source_list}")
+        print(f"kline_source_list: {bars}")
         self.kline.updates(bars)
 
         self.enable = True
