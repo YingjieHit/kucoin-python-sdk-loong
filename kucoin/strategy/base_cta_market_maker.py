@@ -58,7 +58,7 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         # await self.ws_private_client.subscribe('/account/balance')
 
         # 订阅K线
-        await self.ws_public_client.subscribe(f'/market/candles:{self.symbol}_{self.kline_frequency}')
+        # await self.ws_public_client.subscribe(f'/market/candles:{self.symbol}_{self.kline_frequency}')
         # 获取最新K线
         kline_source_list = await self.market_client.get_last_n_kline(
             self.symbol,
