@@ -30,7 +30,7 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         super().__init__(symbol, key, secret, passphrase)
         self.kline_frequency = kline_frequency
         self.kline_size = kline_size
-        self.kline = Kline(self.kline_size)
+        self.kline: Kline|None = None # = Kline(self.kline_size)
         self.updating_bar: Bar|None = None  # 正在更新的bar
         self.market_client = MarketDataAsync()
 
