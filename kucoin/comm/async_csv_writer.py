@@ -2,7 +2,7 @@ import os
 import aiofiles
 import csv
 
-class AsyncCsvWriter:
+class AsyncCsvWriter(object):
     def __init__(self):
         pass
 
