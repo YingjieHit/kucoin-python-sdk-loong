@@ -1,4 +1,4 @@
-
+import time
 import asyncio
 import socket
 from kucoin.client import WsToken
@@ -8,10 +8,15 @@ from kucoin.ws_client import KucoinWsClient
 
 async def main():
     async def deal_msg(msg):
-        if msg['topic'] == '/spotMarket/level2Depth5:BTC-USDT':
+        if msg['topic'] == '/spotMarket/level2Depth50:BTC-USDT':
             print(msg["data"])
-        elif msg['topic'] == '/spotMarket/level2Depth5:KCS-USDT':
+        elif msg['topic'] == '/spotMarket/level2Depth50:KCS-USDT':
             print(f'Get KCS level3:{msg["data"]}')
+
+        ts = msg.get('data').get('timestamp')
+        # 本机时间
+        local_ts = int(time.time() * 1000)
+        print(f'local_ts: {local_ts}, ts: {ts}', '时间差:', ts - local_ts)
 
     # is public
     client = WsToken()
@@ -22,9 +27,9 @@ async def main():
 
     ws_client = await KucoinWsClient.create(None, client, deal_msg, private=False,sock=sock)
 
-    await ws_client.subscribe('/spotMarket/level2Depth5:BTC-USDT,KCS-USDT')
+    await ws_client.subscribe('/spotMarket/level2Depth50:BTC-USDT,KCS-USDT')
     while True:
-        await asyncio.sleep(60, loop=loop)
+        await asyncio.sleep(60)
 
 
 if __name__ == "__main__":
