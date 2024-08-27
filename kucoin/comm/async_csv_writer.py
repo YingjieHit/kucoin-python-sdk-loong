@@ -22,7 +22,7 @@ class AsyncCsvWriter(object):
         with open(file_name, mode='a', newline='') as f:
             writer = csv.writer(f)
             for row in data:
-                await writer.writerow(row)
+                writer.writerow(row)
 
     async def remove_file(self, file_name):
         if os.path.exists(file_name):
