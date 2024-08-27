@@ -32,6 +32,12 @@ class Utils(object):
             '1week': 7 * 24 * 60 * 60,
         }[freq] * n
 
+    @staticmethod
+    def get_date_str_from_ts_ms(ts):
+        ts_seconds = int(ts / 1e3)  # 假设ts是毫秒级别的时间戳，转换为秒级时间戳
+        date_str = datetime.utcfromtimestamp(ts_seconds).strftime('%Y-%m-%d')
+        return date_str
+
 
 utils = Utils()
 
