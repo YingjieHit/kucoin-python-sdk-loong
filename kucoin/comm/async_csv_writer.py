@@ -18,7 +18,8 @@ class AsyncCsvWriter(object):
             await writer.writerow(data)
 
     async def write_rows(self, data, file_name):
-        async with aiofiles.open(file_name, mode='a', newline='') as f:
+        # async with aiofiles.open(file_name, mode='a', newline='') as f:
+        with open(file_name, mode='a', newline='') as f:
             writer = csv.writer(f)
             for row in data:
                 await writer.writerow(row)
