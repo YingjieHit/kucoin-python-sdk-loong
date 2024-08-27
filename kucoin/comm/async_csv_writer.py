@@ -17,6 +17,11 @@ class AsyncCsvWriter(object):
             writer = csv.writer(f)
             await writer.writerow(data)
 
+    async def write_rows(self, data, file_name):
+        async with aiofiles.open(file_name, mode='a', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerows(data)
+
     async def remove_file(self, file_name):
         if os.path.exists(file_name):
             os.remove(file_name)
