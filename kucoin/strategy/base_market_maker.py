@@ -4,13 +4,14 @@ from kucoin.client import WsToken
 from kucoin.ws_client import KucoinWsClient
 from kucoin.trade.async_trade import TradeDataAsync
 
-from kucoin_futures.strategy.event import (EventType, TickerEvent, TraderOrderEvent, CreateMarketMakerOrderEvent,
+from kucoin_futures.strategy.event import (EventType, TickerEvent, Level2Depth50Event,
+                                           TraderOrderEvent, CreateMarketMakerOrderEvent,
                                            CreateOrderEvent,
                                            CancelAllOrderEvent, CancelOrderEvent,
                                            AccountBalanceEvent)
 from kucoin.strategy.enums import Subject
 from kucoin_futures.strategy.utils import utils
-from kucoin_futures.strategy.object import Ticker, Order, MarketMakerCreateOrder, CreateOrder, CancelOrder, \
+from kucoin_futures.strategy.object import Ticker, Level2Depth50, Order, MarketMakerCreateOrder, CreateOrder, CancelOrder, \
     AccountBalance
 from kucoin_futures.common.app_logger import app_logger
 
@@ -148,6 +149,9 @@ class BaseMarketMaker(object):
     async def on_tick(self, ticker: Ticker):
         raise NotImplementedError("需要实现on_tick")
 
+    async def on_level2_depth50(self, level2_depth50: Level2Depth50):
+        raise NotImplementedError("需要实现on_level2_depth50")
+
     async def on_order(self, order: Order):
         raise NotImplementedError("需要实现on_order")
 
@@ -162,6 +166,9 @@ class BaseMarketMaker(object):
                 if event.type == EventType.TICKER:
                     # 处理ticker
                     await self.on_tick(event.data)
+                if event.type == EventType.LEVEL2DEPTH50:
+                    # 处理level2depth50深度盘口数据
+                    await self.on_level2_depth50(event.data)
                 elif event.type == EventType.TRADE_ORDER:
                     # 处理order回报
                     await self.on_order(event.data)
@@ -173,11 +180,18 @@ class BaseMarketMaker(object):
                 await app_logger.error(f"process_event Error {str(e)}")
 
     async def deal_public_msg(self, msg):
-        data = msg.get('data')
+        # data = msg.get('data')
         if msg.get('subject') == Subject.level2:
-            ticker = utils.spot_level2_2_ticker(data)
-            ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
-            await self.event_queue.put(TickerEvent(ticker))
+            # "topic": "/spotMarket/level2Depth50:BTC-USDT"
+            # TODO: 未来多合约考虑推送多品种的level2数据
+            if msg.get('topic') == f'/spotMarket/level2Depth50:{self.symbol}':
+                level2_depth50 = utils.spot_msg_2_level2_depth50(msg)
+                await self.event_queue.put(Level2Depth50Event(level2_depth50))
+
+            # ticker暂时弃用，直接用level2，on_ticker方法将会收不到数据
+            # ticker = utils.spot_level2_2_ticker(data)
+            # ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
+            # await self.event_queue.put(TickerEvent(ticker))
 
     async def deal_private_msg(self, msg):
         data = msg.get('data')
