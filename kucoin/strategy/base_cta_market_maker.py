@@ -83,6 +83,7 @@ class BaseCtaMarketMaker(BaseMarketMaker):
                 # TODO: 未来多合约考虑推送多品种的level2数据
                 if msg.get('topic') == f'/spotMarket/level2Depth50:{self.symbol}':
                     level2_depth50 = strategy_utils.spot_msg_2_level2_depth50(msg)
+                    print(f"msg = {msg}")
                     await self.event_queue.put(Level2Depth50Event(level2_depth50))
 
                 # 不再推送ticker
