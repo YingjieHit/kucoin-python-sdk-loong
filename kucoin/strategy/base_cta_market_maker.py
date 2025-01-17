@@ -7,7 +7,7 @@ from kucoin.comm.utils import utils
 from kucoin_futures.strategy.utils import utils as strategy_utils
 from kucoin_futures.strategy.event import (
     EventType,
-    TickerEvent, BarEvent,
+    TickerEvent, BarEvent, Level2Depth50Event,
     TraderOrderEvent, CreateMarketMakerOrderEvent,
     CreateOrderEvent,
     CancelAllOrderEvent, CancelOrderEvent,
@@ -30,8 +30,8 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         super().__init__(symbol, key, secret, passphrase)
         self.kline_frequency = kline_frequency
         self.kline_size = kline_size
-        self.kline: Kline|None = None # = Kline(self.kline_size)
-        self.updating_bar: Bar|None = None  # 正在更新的bar
+        self.kline: Kline | None = None  # = Kline(self.kline_size)
+        self.updating_bar: Bar | None = None  # 正在更新的bar
         self.market_client = MarketDataAsync()
 
     async def run(self):
@@ -78,9 +78,16 @@ class BaseCtaMarketMaker(BaseMarketMaker):
     async def deal_public_msg(self, msg):
         data = msg.get('data')
         if msg.get('subject') == Subject.level2:
-            ticker = strategy_utils.spot_level2_2_ticker(data)
-            ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
-            await self.event_queue.put(TickerEvent(ticker))
+            # "topic": "/spotMarket/level2Depth50:BTC-USDT"
+            # TODO: 未来多合约考虑推送多品种的level2数据
+            if msg.get('topic') == f'/spotMarket/level2Depth50:{self.symbol}':
+                level2_depth50 = utils.spot_msg_2_level2_depth50(msg)
+                await self.event_queue.put(Level2Depth50Event(level2_depth50))
+
+            # 不再推送ticker
+            # ticker = strategy_utils.spot_level2_2_ticker(data)
+            # ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
+            # await self.event_queue.put(TickerEvent(ticker))
 
         elif msg.get('subject') in [Subject.tradeCandlesAdd, Subject.tradeCandlesUpdate]:
             bar = strategy_utils.spot_candle_2_bar(data)
@@ -94,6 +101,9 @@ class BaseCtaMarketMaker(BaseMarketMaker):
                 if event.type == EventType.TICKER:
                     # 处理ticker
                     await self.on_tick(event.data)
+                if event.type == EventType.LEVEL2DEPTH50:
+                    # 处理level2depth50深度盘口数据
+                    await self.on_level2_depth50(event.data)
                 elif event.type == EventType.TRADE_ORDER:
                     # 处理order回报
                     await self.on_order(event.data)
