@@ -76,22 +76,29 @@ class BaseCtaMarketMaker(BaseMarketMaker):
         # await super().run()
 
     async def deal_public_msg(self, msg):
-        data = msg.get('data')
-        if msg.get('subject') == Subject.level2:
-            # "topic": "/spotMarket/level2Depth50:BTC-USDT"
-            # TODO: 未来多合约考虑推送多品种的level2数据
-            if msg.get('topic') == f'/spotMarket/level2Depth50:{self.symbol}':
-                level2_depth50 = strategy_utils.spot_msg_2_level2_depth50(msg)
-                await self.event_queue.put(Level2Depth50Event(level2_depth50))
+        try:
+            data = msg.get('data')
+            if msg.get('subject') == Subject.level2:
+                # "topic": "/spotMarket/level2Depth50:BTC-USDT"
+                # TODO: 未来多合约考虑推送多品种的level2数据
+                if msg.get('topic') == f'/spotMarket/level2Depth50:{self.symbol}':
+                    level2_depth50 = strategy_utils.spot_msg_2_level2_depth50(msg)
+                    await self.event_queue.put(Level2Depth50Event(level2_depth50))
 
-            # 不再推送ticker
-            # ticker = strategy_utils.spot_level2_2_ticker(data)
-            # ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
-            # await self.event_queue.put(TickerEvent(ticker))
+                # 不再推送ticker
+                # ticker = strategy_utils.spot_level2_2_ticker(data)
+                # ticker.symbol = self.symbol  # TODO: 暂时这么写，不太严谨
+                # await self.event_queue.put(TickerEvent(ticker))
 
-        elif msg.get('subject') in [Subject.tradeCandlesAdd, Subject.tradeCandlesUpdate]:
-            bar = strategy_utils.spot_candle_2_bar(data)
-            await self.event_queue.put(BarEvent(bar))
+            elif msg.get('subject') in [Subject.tradeCandlesAdd, Subject.tradeCandlesUpdate]:
+                bar = strategy_utils.spot_candle_2_bar(data)
+                await self.event_queue.put(BarEvent(bar))
+
+        except Exception as e:
+            err_msg = f"deal_public_msg Error {str(e)}"
+            await app_logger.error(err_msg)
+            print(err_msg)
+
 
     async def process_event(self):
         """处理事件"""
