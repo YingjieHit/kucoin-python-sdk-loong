@@ -27,7 +27,7 @@ class BaseMarketMaker(object):
             secret=secret,
             passphrase=passphrase,
             # url='https://api.kucoin.com',
-            url='wss://mixed-ws-colo.kucoin.com/v1/private',
+            url='spot-push-colo.kucoin.com',
         )
         self.trade = TradeDataAsync(key=key, secret=secret, passphrase=passphrase,url='spot-rest-colo.kucoin.com')
         self.ws_public_client = None
